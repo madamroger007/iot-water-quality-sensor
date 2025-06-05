@@ -1,0 +1,130 @@
+<div class="flex justify-between items-center mb-4">
+  <label class="text-sm">
+    Urutkan:
+    <select id="sortSelect" class="border px-2 py-1 rounded">
+      <option value="ph">PH</option>
+      <option value="tds">TDS</option>
+      <option value="suhu">SUHU</option>
+      <option value="turbidity">TURBIDITY</option>
+      <option value="kelayakan">KELAYAKAN</option>
+      <option value="waktu">WAKTU</option>
+    </select>
+  </label>
+
+  <label class="text-sm">
+    Baris per halaman:
+    <select id="rowsPerPage" class="border px-2 py-1 rounded">
+      <option value="5">5</option>
+      <option value="10" selected>10</option>
+      <option value="25">25</option>
+    </select>
+  </label>
+</div>
+<div class="bg-white rounded-xl shadow-md p-4 overflow-x-auto">
+  <table class="min-w-full divide-y divide-gray-200 text-sm" id="monitorTable">
+    <thead class="bg-gray-50 text-gray-700 font-semibold">
+      <tr>
+        <th class="px-6 py-3 text-left">PH</th>
+        <th class="px-6 py-3 text-left">TDS</th>
+        <th class="px-6 py-3 text-left">SUHU</th>
+        <th class="px-6 py-3 text-left">TURBIDITY</th>
+        <th class="px-6 py-3 text-left">KELAYAKAN</th>
+        <th class="px-6 py-3 text-left">Waktu</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody" class="divide-y divide-gray-100 text-gray-700">
+      {% for row in table_rows %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-6 py-3">{{ row.ph }}</td>
+        <td class="px-6 py-3">{{ row.tds }}</td>
+        <td class="px-6 py-3">{{ row.suhu }}</td>
+        <td class="px-6 py-3">
+          {% if row.kelayakan %}
+            Layak Minum
+          {% else %}
+            Tidak Layak Minum
+          {% endif %}
+        </td>
+        <td class="px-6 py-3">{{ row.dibuat_sejak }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination button container -->
+<div id="pagination" class="flex gap-1 mt-4 flex-wrap"></div>
+
+{% block script %}
+<script>
+  const tbody = document.getElementById("tableBody");
+  const rows = Array.from(tbody.querySelectorAll("tr"));
+  const sortSelect = document.getElementById("sortSelect");
+  const rowsPerPageSelect = document.getElementById("rowsPerPage");
+  const pagination = document.getElementById("pagination");
+
+  let currentPage = 1;
+  let rowsPerPage = parseInt(rowsPerPageSelect.value);
+
+  function getColumnIndex(key) {
+    switch (key) {
+      case "ph": return 1;
+      case "tds": return 2;
+      case "suhu": return 3;
+      case "turbidity": return 4;
+      case "kelayakan": return 5;
+      case "waktu": return 6;
+      default: return 1;
+    }
+  }
+
+  function renderTable() {
+    const sortBy = sortSelect.value;
+    const colIndex = getColumnIndex(sortBy);
+
+    rows.sort((a, b) => {
+      const aText = a.querySelector(`td:nth-child(${colIndex})`).innerText.toLowerCase();
+      const bText = b.querySelector(`td:nth-child(${colIndex})`).innerText.toLowerCase();
+
+      return aText.localeCompare(bText);
+    });
+
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    tbody.innerHTML = "";
+    rows.slice(start, end).forEach(row => tbody.appendChild(row));
+
+    renderPagination();
+  }
+
+  function renderPagination() {
+    pagination.innerHTML = "";
+    const pageCount = Math.ceil(rows.length / rowsPerPage);
+
+    for (let i = 1; i <= pageCount; i++) {
+      const btn = document.createElement("button");
+      btn.innerText = i;
+      btn.className = `px-3 py-1 rounded ${i === currentPage ? 'bg-purple-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`;
+      btn.onclick = () => {
+        currentPage = i;
+        renderTable();
+      };
+      pagination.appendChild(btn);
+    }
+  }
+
+  sortSelect.addEventListener("change", () => {
+    currentPage = 1;
+    renderTable();
+  });
+
+  rowsPerPageSelect.addEventListener("change", () => {
+    rowsPerPage = parseInt(rowsPerPageSelect.value);
+    currentPage = 1;
+    renderTable();
+  });
+
+  renderTable();
+</script>
+{% endblock %}
