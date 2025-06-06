@@ -2,7 +2,6 @@ import paho.mqtt.client as paho
 from paho import mqtt
 import os
 import time
-import requests
 from datetime import datetime, timedelta
 import ssl
 import certifi

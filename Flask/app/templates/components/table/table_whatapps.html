@@ -1,13 +1,13 @@
-<div class="flex justify-between items-center mb-4">
+<div class="flex justify-between items-center mb-4 mt-5">
   <label class="text-sm">
     Urutkan:
     <select id="sortSelect" class="border px-2 py-1 rounded">
-      <option value="ph">PH</option>
-      <option value="tds">TDS</option>
-      <option value="suhu">SUHU</option>
-      <option value="turbidity">TURBIDITY</option>
-      <option value="kelayakan">KELAYAKAN</option>
-      <option value="waktu">WAKTU</option>
+      <option value="kelembapan_udara">K. Udara</option>
+      <option value="kelembapan_tanah">K. Tanah</option>
+      <option value="suhu">Suhu</option>
+      <option value="penyiraman">Penyiraman</option>
+      <option value="pengkabutan">Pengkabutan</option>
+      <option value="dibuat_sejak">Waktu Terbaru</option>
     </select>
   </label>
 
@@ -24,30 +24,22 @@
   <table class="min-w-full divide-y divide-gray-200 text-sm" id="monitorTable">
     <thead class="bg-gray-50 text-gray-700 font-semibold">
       <tr>
-        <th class="px-6 py-3 text-left">PH</th>
-        <th class="px-6 py-3 text-left">TDS</th>
-        <th class="px-6 py-3 text-left">SUHU</th>
-        <th class="px-6 py-3 text-left">TURBIDITY</th>
-        <th class="px-6 py-3 text-left">KELAYAKAN</th>
-        <th class="px-6 py-3 text-left">Waktu</th>
+        <th class="px-6 py-3 text-left">Nomor WA</th>
+        <th class="px-6 py-3 text-left">Dibuat Sejak</th>
+        <th class="px-6 py-3 text-left">Diubah Sejak</th>
+        <th class="px-6 py-3 text-left">Jenis Aksi</th>
       </tr>
     </thead>
     <tbody id="tableBody" class="divide-y divide-gray-100 text-gray-700">
       {% for row in table_rows %}
       <tr class="hover:bg-gray-50">
-        <td class="px-6 py-3">{{ row.ph }}</td>
-        <td class="px-6 py-3">{{ row.tds }}</td>
-        <td class="px-6 py-3">{{ row.suhu }}</td>
-        <td class="px-6 py-3">{{ row.turbidity }}</td>
-
+        <td class="px-6 py-3">{{ row.nomor_hp }}</td>
+        <td class="px-6 py-3">{{ row.dibuat_sejak }}</td>
+        <td class="px-6 py-3">{{ row.diubah_sejak }}</td>
         <td class="px-6 py-3">
-          {% if row.kelayakan %}
-          Layak Minum
-          {% else %}
-          Tidak Layak Minum
-          {% endif %}
+          <button type="button" onclick="deleteData({{ row.id }})" class="bg-red-500 hover:bg-red-600 text-white py-1 px-2 rounded">Hapus</button>
+       
         </td>
-        <td class="px-6 py-3">{{ row.waktu }}</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -70,12 +62,12 @@
 
   function getColumnIndex(key) {
     switch (key) {
-      case "ph": return 1;
-      case "tds": return 2;
+      case "kelembapan_udara": return 1;
+      case "kelembapan_tanah": return 2;
       case "suhu": return 3;
-      case "turbidity": return 4;
-      case "kelayakan": return 5;
-      case "waktu": return 6;
+      case "penyiraman": return 4;
+      case "pengkabutan": return 5;
+      case "dibuat_sejak": return 6;
       default: return 1;
     }
   }
@@ -128,5 +120,25 @@
   });
 
   renderTable();
+
+  function deleteData(id) {
+    if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
+      fetch(`/api/delete-wa-number/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          alert("Data berhasil dihapus.");
+          location.reload();
+        } else {
+          alert("Gagal menghapus data.");
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+  }
 </script>
 {% endblock %}

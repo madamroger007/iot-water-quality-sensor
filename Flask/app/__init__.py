@@ -31,5 +31,9 @@ def create_app():
 
     # ⬇️ Tambahkan ini supaya model dikenali oleh Flask-Migrate
     from app.src.model.schemas import data_sensor, nomor_hp
+    from app.src.routes.main import main as main_blueprint
+    from app.src.routes.auth import auth as auth_blueprint
 
+    app.register_blueprint(main_blueprint)
+    app.register_blueprint(auth_blueprint)
     return app
