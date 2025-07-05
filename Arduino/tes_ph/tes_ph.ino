@@ -1,24 +1,20 @@
 #include <Wire.h>
 
-
-float calibration_value = 21.34 + 1.5;
-unsigned long int avgval;
+#define PH_SENSOR_PIN 34   // GPIO34 untuk sensor pH
 int buffer_arr[10], temp;
+unsigned long int avgval;
 float ph_act;
-
-// Tentukan pin analog untuk sensor pH
-#define PH_SENSOR_PIN 34   // GPIO34 contoh, bisa ganti ke pin analog lain
 
 void setup() {
   Wire.begin();
   Serial.begin(115200);   // Baudrate umum ESP32
 
-  Serial.print("pH Sensor Ready");
+  Serial.println("pH Sensor Ready");
   delay(2000);
 }
 
 void loop() {
-  // Baca data analog
+  // Ambil 10 sample pembacaan analog
   for (int i = 0; i < 10; i++) {
     buffer_arr[i] = analogRead(PH_SENSOR_PIN);
     delay(30);
@@ -35,23 +31,22 @@ void loop() {
     }
   }
 
-  // Ambil rata-rata dari data tengah
+  // Ambil nilai tengah dari pembacaan untuk menghindari noise ekstrem
   avgval = 0;
-  for (int i = 2; i < 8; i++)
+  for (int i = 2; i < 8; i++) {
     avgval += buffer_arr[i];
+  }
 
-  // Konversi ke voltase ESP32
-  float volt = (float)avgval * 3.3 / 4095.0 / 6;
-  ph_act = -5.70 * volt + calibration_value;
+  // Konversi nilai ADC ke tegangan (volt)
+  float volt = (float)avgval * 3.3 / 4095.0 / 6.0;
 
-  // Tampilkan di Serial Monitor
-  Serial.print("pH Value: ");
-  Serial.println(ph_act);
+  // Hitung nilai pH berdasarkan hasil kalibrasi regresi linier
+  ph_act = -6.19 * volt + 25.39;
 
-  // Tampilkan di LCD
+  // Tampilkan data
+  Serial.print("ADC: "); Serial.print(avgval / 6);
+  Serial.print(" | Tegangan: "); Serial.print(volt, 3); Serial.print(" V");
+  Serial.print(" | pH Value: "); Serial.println(ph_act, 2);
 
-  Serial.print("pH Value:");
-  Serial.println(ph_act, 2);    // 2 angka di belakang koma
-
-  delay(1000); // Delay untuk kestabilan pembacaan
+  delay(1000);
 }

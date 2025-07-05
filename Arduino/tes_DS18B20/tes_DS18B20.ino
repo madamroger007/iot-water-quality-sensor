@@ -3,7 +3,7 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
-const int oneWireBus_DS18B20 = 34;
+const int oneWireBus_DS18B20 = 4;
 OneWire oneWire_DS18B20(oneWireBus_DS18B20);
 DallasTemperature DS18B20(&oneWire_DS18B20);
 
