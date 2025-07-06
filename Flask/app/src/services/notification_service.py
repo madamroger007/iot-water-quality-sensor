@@ -8,7 +8,7 @@ load_dotenv()
 def notify_sensor_data_Service(msg, app=None):
     wa_server_url = os.getenv('WA_SERVER_URL')
     session_id = os.getenv('WA_SESSION_ID')
-
+    print("env:", wa_server_url, session_id)
     if not wa_server_url:
         print("❌ WA_SERVER_URL tidak ditemukan di .env")
         return

@@ -9,7 +9,7 @@ from app.src.repositories.nohp_repositories import (
 notification = Blueprint('notification', __name__)
 
 @notification.route('/api/add-wa-number', methods=['POST'])
-def update_wa_number():
+def add_wa_number():
     try:
         data = request.get_json()
         wa_number = data.get('wa_number')

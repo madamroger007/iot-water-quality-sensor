@@ -1,4 +1,4 @@
-#define TdsSensorPin 27
+#define TdsSensorPin 32
 #define VREF 3.3              // Referensi tegangan ADC ESP32
 #define SCOUNT 30             // Jumlah sample
 

@@ -33,7 +33,11 @@ def create_app():
     from app.src.model.schemas import data_sensor, nomor_hp
     from app.src.routes.main import main as main_blueprint
     from app.src.routes.auth import auth as auth_blueprint
+    from app.src.routes.sensor import sensor as sensor_blueprint
+    from app.src.routes.notification import notification as notification_blueprint
 
     app.register_blueprint(main_blueprint)
     app.register_blueprint(auth_blueprint)
+    app.register_blueprint(sensor_blueprint)
+    app.register_blueprint(notification_blueprint)
     return app

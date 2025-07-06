@@ -33,23 +33,30 @@
   document.addEventListener('alpine:init', () => {
     Alpine.data('dashboardData', () => ({
       cards: [
-        { label: 'PH Air', value: null, max: 100, color: 'text-green-500', icon: '💧', unit: '%' },
-        { label: 'TDS', value: null, max: 100, color: 'text-blue-500', icon: '💧', unit: '%' },
+        { label: 'PH', value: null, max: 10, color: 'text-green-500', icon: '💧', unit: '' },
+        { label: 'TDS', value: null, max: 1000, color: 'text-blue-500', icon: '💧', unit: 'ppm' },
         { label: 'Suhu', value: null, max: 100, color: 'text-red-500', icon: '🌡️', unit: '°C' },
-        { label: 'Turbidity', value: null, max: 100, color: 'text-red-500', icon: '💧', unit: '°C' },
-      ],
+        { label: 'Turbidity', value: null, max: 10, color: 'text-red-500', icon: '💧', unit: 'NTU' },
+      ]
+      ,
       initWebSocket() {
         if (!socketInitialized) {
           socket.on('sensor_update', data => {
             console.log("Received sensor_update", data);
+            let updated = false;
             for (const key in data) {
-              const card = this.cards.find(c => c.label === key);
-              if (card) {
-                console.log(`Updating ${key} to`, data[key]);
-                card.value = data[key];
+              const index = this.cards.findIndex(c => c.label === key);
+              if (index !== -1) {
+                this.cards[index].value = data[key];
+                updated = true;
               }
             }
+            if (updated) {
+              // Paksa Alpine re-render
+              this.cards = [...this.cards];
+            }
           });
+
 
           socketInitialized = true;
         }
