@@ -103,7 +103,6 @@ def handle_sensor_data(client, userdata, msg):
             latest_sensor_data["Suhu"]
         )
         socketio.emit("air_status", {"kelayakan": hasil})
-        print(f"💧 Status Kelayakan Air Realtime: {hasil}")
 
 # CEK SENSOR STALE
 def check_sensor_status():

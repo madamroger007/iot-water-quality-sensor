@@ -106,7 +106,7 @@ float readPH() {
   avgval = 0;
   for (int i = 2; i < 8; i++) avgval += buffer_arr[i];
   float volt = (float)avgval * 3.3 / 4095.0 / 6.0;
-  return -6.19 * volt + 25.39;
+  return -6.19 * volt + 25.19;
 }
 
 int getMedianNum(int bArray[], int iFilterLen) {
@@ -152,7 +152,7 @@ float readTDS(float temperature) {
     Serial.print(averageVoltage, 3);
     Serial.print(" V, ");
 
-    if (averageVoltage < 0.3) {
+    if (averageVoltage < 0.05) {
       tdsValue = 0.0;
       return tdsValue;
     }

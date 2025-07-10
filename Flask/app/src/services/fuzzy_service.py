@@ -25,7 +25,7 @@ def cek_kelayakan_air(ph, tds, turbidity, suhu):
     """
     # Derajat keanggotaan fuzzy
     μ_ph = fuzzy(ph, 6.5, 8.5, buffer=0.5)
-    μ_tds = 1.0 if tds < 300 else fuzzy(tds, 0, 300, buffer=200)
+    μ_tds = fuzzy(tds, 0, 300, buffer=0)  # ❌ Tidak pakai buffer toleransi
     μ_turbidity = 1.0 if turbidity < 3 else fuzzy(turbidity, 0, 3, buffer=2)
     μ_suhu = fuzzy(suhu, 22, 28, buffer=3)
 
