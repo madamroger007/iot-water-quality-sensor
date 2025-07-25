@@ -5,8 +5,8 @@
 #include <DallasTemperature.h>
 
 // --- WiFi & MQTT ---
-const char* ssid = "Konsol";
-const char* password = "20011116";
+const char* ssid = "OPPO A54";
+const char* password = "riskanurhayan";
 const char* mqtt_server = "5c2a2c9f7fc5480cbc20a18da313b797.s2.eu.hivemq.cloud";
 const int mqtt_port = 8883;
 const char* mqtt_user = "hivemq.webclient.1751739498481";
@@ -89,7 +89,7 @@ float readTemperature() {
 float readPH() {
   for (int i = 0; i < 10; i++) {
     buffer_arr[i] = analogRead(PH_SENSOR_PIN);
-    delay(30);
+     delayMicroseconds(1000); // 1ms atau hilangkan delay sama sekali
   }
 
   // Sorting array
@@ -106,7 +106,7 @@ float readPH() {
   avgval = 0;
   for (int i = 2; i < 8; i++) avgval += buffer_arr[i];
   float volt = (float)avgval * 3.3 / 4095.0 / 6.0;
-  return -6.19 * volt + 25.19;
+  return -6.19 * volt + 25.30;
 }
 
 int getMedianNum(int bArray[], int iFilterLen) {
@@ -174,21 +174,16 @@ float readTDS(float temperature) {
 float readTurbidity() {
   int adcValue = analogRead(TURBIDITY_PIN);
   float voltage = adcValue * (3.3 / 4095.0);
-  float ntu = 0.0;
 
-  // Kalibrasi linear berdasarkan uji empiris untuk 0–10 NTU
-  if (voltage >= 2.5 && voltage <= 3.0) {
-    // Linear mapping: jernih → NTU 0
-    ntu = 0.0;
-  } else if (voltage >= 1.5 && voltage < 2.5) {
-    // Semakin keruh, NTU naik
-    ntu = (2.5 - voltage) * (10.0 / (2.5 - 1.5));  // naik dari 0 ke 10
-  } else if (voltage < 1.5) {
-    ntu = 10.0; // sangat keruh
-  }
+  // Rumus kalibrasi DFRobot berdasarkan eksperimen nyata
+  float ntu = -1120.4 * sq(voltage) + 5742.3 * voltage - 4352.9;
+
+  // Pastikan tidak negatif
+  if (ntu < 0) ntu = 0;
 
   return ntu;
 }
+
 
 
 
